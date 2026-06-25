@@ -11,8 +11,9 @@ export const assetServer = createAssetServer({
   rootDir,
   fileMap: {
     'app/*path': 'app/*path',
+    'node_modules/*path': 'node_modules/*path',
   },
-  allow: ['app/assets/**'],
+  allow: ['app/assets/**', 'node_modules/**'],
   sourceMaps: isDevelopment ? 'external' : undefined,
   minify: !isDevelopment,
   watch: false,

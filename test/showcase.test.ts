@@ -21,8 +21,38 @@ test('renders the showcase home page', async () => {
 
   let html = await response.text()
   assert.match(html, /Remix 3 UI Showcase/)
-  assert.match(html, /Theme and UI components in one focused starter\./)
-  assert.match(html, /Reusable UI components styled by the same theme/)
+  assert.match(html, /Interactive UI &amp; animation showcase/)
+  assert.match(html, /Every first-party component in remix\/ui/)
+})
+
+test('installs the Remix UI theme and glyph sheet', async () => {
+  let response = await router.fetch(
+    new Request(new URL(homePath, 'https://example.test'), {
+      headers: { Accept: 'text/html' },
+    }),
+  )
+
+  let html = await response.text()
+  // The RMX_01 theme renders CSS custom properties...
+  assert.match(html, /--rmx-color-action-primary-background/)
+  // ...and the glyph sheet registers reusable symbols.
+  assert.match(html, /<symbol/)
+})
+
+test('server-renders the component demos as hydration islands', async () => {
+  let response = await router.fetch(
+    new Request(new URL(homePath, 'https://example.test'), {
+      headers: { Accept: 'text/html' },
+    }),
+  )
+
+  let html = await response.text()
+  // Hydration metadata names each client entry that boots in the browser.
+  assert.match(html, /"exportName":"ButtonsDemo"/)
+  assert.match(html, /"exportName":"SpringDemo"/)
+  // SSR output for a few representative demos.
+  assert.match(html, /Create project/)
+  assert.match(html, /Search airports or codes/)
 })
 
 test('normalizes GitHub Pages base paths', () => {
