@@ -80,7 +80,7 @@ const tokenGroups = [
 
 export function ShowcasePage() {
   return () => (
-    <Document head={<ShowcaseHead />} title="Remix 3 UI Showcase">
+    <Document head={ShowcaseHead()} title="Remix 3 UI Showcase">
       <main
         mix={css({
           '--page-background': '#020817',
@@ -112,14 +112,15 @@ export function ShowcasePage() {
             gap: '32px',
           })}
         >
-          <Hero />
+          {Hero()}
           <section aria-labelledby="theme-showcase" mix={css({ display: 'grid', gap: '20px' })}>
-            <SectionHeading
-              eyebrow="Theme"
-              title="Theme tokens that scale from landing page to product UI"
-              description="A compact palette, spacing scale, and elevation system keep the showcase visually consistent."
-              id="theme-showcase"
-            />
+            {SectionHeading({
+              eyebrow: 'Theme',
+              title: 'Theme tokens that scale from landing page to product UI',
+              description:
+                'A compact palette, spacing scale, and elevation system keep the showcase visually consistent.',
+              id: 'theme-showcase',
+            })}
             <div
               mix={css({
                 display: 'grid',
@@ -129,8 +130,8 @@ export function ShowcasePage() {
                 },
               })}
             >
-              <PalettePanel />
-              <TokenPanel />
+              {PalettePanel()}
+              {TokenPanel()}
             </div>
           </section>
 
@@ -141,13 +142,14 @@ export function ShowcasePage() {
               gap: '20px',
             })}
           >
-            <SectionHeading
-              eyebrow="Components"
-              title="Reusable UI components styled by the same theme"
-              description="Each example is intentionally small so the showcase works well as a starter reference."
-              id="component-showcase"
-            />
-            <ComponentGrid />
+            {SectionHeading({
+              eyebrow: 'Components',
+              title: 'Reusable UI components styled by the same theme',
+              description:
+                'Each example is intentionally small so the showcase works well as a starter reference.',
+              id: 'component-showcase',
+            })}
+            {ComponentGrid()}
           </section>
         </div>
       </main>
@@ -238,9 +240,9 @@ function Hero() {
           border: '1px solid rgba(148, 163, 184, 0.16)',
         })}
       >
-        <PreviewBadge tone="brand" label="Buttons" value="3 variants" />
-        <PreviewBadge tone="accent" label="Tokens" value="10+ examples" />
-        <PreviewBadge tone="success" label="Deployment" value="GitHub Pages ready" />
+        {PreviewBadge({ tone: 'brand', label: 'Buttons', value: '3 variants' })}
+        {PreviewBadge({ tone: 'accent', label: 'Tokens', value: '10+ examples' })}
+        {PreviewBadge({ tone: 'success', label: 'Deployment', value: 'GitHub Pages ready' })}
       </div>
     </section>
   )
@@ -380,173 +382,188 @@ function ComponentGrid() {
         },
       })}
     >
-      <ComponentCard title="Buttons" description="Primary, secondary, and ghost buttons.">
-        <div mix={css({ display: 'flex', gap: '12px', flexWrap: 'wrap' })}>
-          <button type="button" mix={buttonStyle('primary')}>
-            Get started
-          </button>
-          <button type="button" mix={buttonStyle('secondary')}>
-            Preview theme
-          </button>
-          <button type="button" mix={buttonStyle('ghost')}>
-            View source
-          </button>
-        </div>
-      </ComponentCard>
-
-      <ComponentCard
-        title="Badges & alerts"
-        description="Status messaging with small token variations."
-      >
-        <div mix={css({ display: 'grid', gap: '14px' })}>
-          <div mix={css({ display: 'flex', gap: '10px', flexWrap: 'wrap' })}>
-            <StatusPill tone="brand" label="Preview" />
-            <StatusPill tone="success" label="Stable" />
-            <StatusPill tone="warning" label="Draft" />
+      {ComponentCard({
+        title: 'Buttons',
+        description: 'Primary, secondary, and ghost buttons.',
+        children: (
+          <div mix={css({ display: 'flex', gap: '12px', flexWrap: 'wrap' })}>
+            <button type="button" mix={buttonStyle('primary')}>
+              Get started
+            </button>
+            <button type="button" mix={buttonStyle('secondary')}>
+              Preview theme
+            </button>
+            <button type="button" mix={buttonStyle('ghost')}>
+              View source
+            </button>
           </div>
-          <div
-            mix={css({
-              padding: '14px 16px',
-              borderRadius: '18px',
-              background: 'rgba(45, 212, 191, 0.12)',
-              border: '1px solid rgba(45, 212, 191, 0.22)',
-              color: '#ccfbf1',
-            })}
-          >
-            Tokens map cleanly into status feedback surfaces.
-          </div>
-        </div>
-      </ComponentCard>
+        ),
+      })}
 
-      <ComponentCard
-        title="Card"
-        description="A compact highlight card for dashboard or marketing layouts."
-      >
-        <article
-          mix={css({
-            display: 'grid',
-            gap: '12px',
-            padding: '18px',
-            borderRadius: '22px',
-            background:
-              'linear-gradient(180deg, rgba(56, 189, 248, 0.12), rgba(15, 23, 42, 0.72) 55%)',
-            border: '1px solid rgba(56, 189, 248, 0.18)',
-          })}
-        >
-          <div mix={css({ display: 'flex', justifyContent: 'space-between', gap: '16px' })}>
-            <strong>Design system preview</strong>
-            <StatusPill tone="accent" label="Featured" />
-          </div>
-          <p mix={css({ margin: 0, color: 'var(--text-muted)' })}>
-            Reuse the same spacing, typography, and elevation tokens across marketing and app
-            surfaces.
-          </p>
-        </article>
-      </ComponentCard>
-
-      <ComponentCard
-        title="Form controls"
-        description="Inputs and selects using the same panel tokens."
-      >
-        <div mix={css({ display: 'grid', gap: '12px' })}>
-          <label mix={fieldLabelStyle}>
-            Project name
-            <input type="text" defaultValue="Remix 3 UI Showcase" mix={fieldStyle} />
-          </label>
-          <label mix={fieldLabelStyle}>
-            Theme mode
-            <select defaultValue="dark" mix={fieldStyle}>
-              <option value="dark">Dark</option>
-              <option value="light">Light</option>
-              <option value="system">System</option>
-            </select>
-          </label>
-        </div>
-      </ComponentCard>
-
-      <ComponentCard title="Stats row" description="Simple numeric summaries for hero or dashboard use.">
-        <div
-          mix={css({
-            display: 'grid',
-            gap: '12px',
-            gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
-          })}
-        >
-          {[
-            ['12', 'tokens'],
-            ['6', 'components'],
-            ['1', 'workflow'],
-          ].map(([value, label]) => (
+      {ComponentCard({
+        title: 'Badges & alerts',
+        description: 'Status messaging with small token variations.',
+        children: (
+          <div mix={css({ display: 'grid', gap: '14px' })}>
+            <div mix={css({ display: 'flex', gap: '10px', flexWrap: 'wrap' })}>
+              {StatusPill({ tone: 'brand', label: 'Preview' })}
+              {StatusPill({ tone: 'success', label: 'Stable' })}
+              {StatusPill({ tone: 'warning', label: 'Draft' })}
+            </div>
             <div
-              key={label}
               mix={css({
-                padding: '16px',
+                padding: '14px 16px',
                 borderRadius: '18px',
-                background: 'rgba(15, 23, 42, 0.6)',
-                border: '1px solid var(--surface-border)',
-                textAlign: 'center',
+                background: 'rgba(45, 212, 191, 0.12)',
+                border: '1px solid rgba(45, 212, 191, 0.22)',
+                color: '#ccfbf1',
               })}
             >
-              <div mix={css({ fontSize: '1.6rem', fontWeight: 700 })}>{value}</div>
-              <div mix={css({ color: 'var(--text-muted)', fontSize: '0.92rem' })}>{label}</div>
+              Tokens map cleanly into status feedback surfaces.
             </div>
-          ))}
-        </div>
-      </ComponentCard>
+          </div>
+        ),
+      })}
 
-      <ComponentCard title="Table" description="Compact data tables stay aligned with the theme.">
-        <div mix={css({ overflowX: 'auto' })}>
-          <table
+      {ComponentCard({
+        title: 'Card',
+        description: 'A compact highlight card for dashboard or marketing layouts.',
+        children: (
+          <article
             mix={css({
-              width: '100%',
-              borderCollapse: 'collapse',
-              color: 'inherit',
+              display: 'grid',
+              gap: '12px',
+              padding: '18px',
+              borderRadius: '22px',
+              background:
+                'linear-gradient(180deg, rgba(56, 189, 248, 0.12), rgba(15, 23, 42, 0.72) 55%)',
+              border: '1px solid rgba(56, 189, 248, 0.18)',
             })}
           >
-            <thead>
-              <tr>
-                {['Component', 'Purpose', 'Token'].map((label) => (
-                  <th
-                    key={label}
-                    mix={css({
-                      padding: '0 0 10px',
-                      borderBottom: '1px solid var(--surface-border)',
-                      textAlign: 'left',
-                      fontSize: '0.82rem',
-                      color: 'var(--text-muted)',
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.06em',
-                    })}
-                  >
-                    {label}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {[
-                ['Button', 'Primary action', 'brand'],
-                ['Input', 'Form entry', 'surface.elevated'],
-                ['Badge', 'Status metadata', 'accent'],
-              ].map((row) => (
-                <tr key={row[0]}>
-                  {row.map((value) => (
-                    <td
-                      key={value}
+            <div mix={css({ display: 'flex', justifyContent: 'space-between', gap: '16px' })}>
+              <strong>Design system preview</strong>
+              {StatusPill({ tone: 'accent', label: 'Featured' })}
+            </div>
+            <p mix={css({ margin: 0, color: 'var(--text-muted)' })}>
+              Reuse the same spacing, typography, and elevation tokens across marketing and app
+              surfaces.
+            </p>
+          </article>
+        ),
+      })}
+
+      {ComponentCard({
+        title: 'Form controls',
+        description: 'Inputs and selects using the same panel tokens.',
+        children: (
+          <div mix={css({ display: 'grid', gap: '12px' })}>
+            <label mix={fieldLabelStyle}>
+              Project name
+              <input type="text" defaultValue="Remix 3 UI Showcase" mix={fieldStyle} />
+            </label>
+            <label mix={fieldLabelStyle}>
+              Theme mode
+              <select defaultValue="dark" mix={fieldStyle}>
+                <option value="dark">Dark</option>
+                <option value="light">Light</option>
+                <option value="system">System</option>
+              </select>
+            </label>
+          </div>
+        ),
+      })}
+
+      {ComponentCard({
+        title: 'Stats row',
+        description: 'Simple numeric summaries for hero or dashboard use.',
+        children: (
+          <div
+            mix={css({
+              display: 'grid',
+              gap: '12px',
+              gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
+            })}
+          >
+            {[
+              ['12', 'tokens'],
+              ['6', 'components'],
+              ['1', 'workflow'],
+            ].map(([value, label]) => (
+              <div
+                key={label}
+                mix={css({
+                  padding: '16px',
+                  borderRadius: '18px',
+                  background: 'rgba(15, 23, 42, 0.6)',
+                  border: '1px solid var(--surface-border)',
+                  textAlign: 'center',
+                })}
+              >
+                <div mix={css({ fontSize: '1.6rem', fontWeight: 700 })}>{value}</div>
+                <div mix={css({ color: 'var(--text-muted)', fontSize: '0.92rem' })}>{label}</div>
+              </div>
+            ))}
+          </div>
+        ),
+      })}
+
+      {ComponentCard({
+        title: 'Table',
+        description: 'Compact data tables stay aligned with the theme.',
+        children: (
+          <div mix={css({ overflowX: 'auto' })}>
+            <table
+              mix={css({
+                width: '100%',
+                borderCollapse: 'collapse',
+                color: 'inherit',
+              })}
+            >
+              <thead>
+                <tr>
+                  {['Component', 'Purpose', 'Token'].map((label) => (
+                    <th
+                      key={label}
                       mix={css({
-                        padding: '12px 0',
-                        borderBottom: '1px solid rgba(148, 163, 184, 0.1)',
+                        padding: '0 0 10px',
+                        borderBottom: '1px solid var(--surface-border)',
+                        textAlign: 'left',
+                        fontSize: '0.82rem',
+                        color: 'var(--text-muted)',
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.06em',
                       })}
                     >
-                      {value}
-                    </td>
+                      {label}
+                    </th>
                   ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </ComponentCard>
+              </thead>
+              <tbody>
+                {[
+                  ['Button', 'Primary action', 'brand'],
+                  ['Input', 'Form entry', 'surface.elevated'],
+                  ['Badge', 'Status metadata', 'accent'],
+                ].map((row) => (
+                  <tr key={row[0]}>
+                    {row.map((value) => (
+                      <td
+                        key={value}
+                        mix={css({
+                          padding: '12px 0',
+                          borderBottom: '1px solid rgba(148, 163, 184, 0.1)',
+                        })}
+                      >
+                        {value}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ),
+      })}
     </div>
   )
 }
