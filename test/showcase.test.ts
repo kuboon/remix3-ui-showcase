@@ -1,12 +1,18 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 
-import { createHomePath, normalizeBasePath, stripBasePath, withBasePath } from '../app/config.ts'
+import {
+  createHomePath,
+  homePath,
+  normalizeBasePath,
+  stripBasePath,
+  withBasePath,
+} from '../app/config.ts'
 import { router } from '../app/router.ts'
 
 test('renders the showcase home page', async () => {
   let response = await router.fetch(
-    new Request('https://example.test/', {
+    new Request(new URL(homePath, 'https://example.test'), {
       headers: { Accept: 'text/html' },
     }),
   )
