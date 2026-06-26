@@ -8,6 +8,20 @@ const rootDir = process.cwd()
 const buildDir = path.join(rootDir, 'build')
 const publicDir = path.join(rootDir, 'public')
 const origin = 'https://example.test'
+const assetPrefix = publicBasePath ? `${publicBasePath}/assets/` : '/assets/'
+
+// Static hosts (GitHub Pages) serve files by extension, and `.ts`/`.tsx` map to
+// non-JavaScript MIME types that browsers refuse to execute as ES modules. The
+// build rewrites every emitted module — and every reference to one — to `.js`.
+const tsRefPattern = new RegExp(`(${escapeRegExp(assetPrefix)}[^"']+?)\\.tsx?(["'])`, 'g')
+
+function rewriteModuleExtensions(source: string) {
+  return source.replace(tsRefPattern, '$1.js$2')
+}
+
+function toJsExtension(assetPath: string) {
+  return assetPath.replace(/\.tsx?$/, '.js')
+}
 
 async function main() {
   await fs.rm(buildDir, { recursive: true, force: true })
@@ -16,12 +30,32 @@ async function main() {
   await copyDirectory(publicDir, buildDir)
 
   let html = await renderPage(homePath)
-  await fs.writeFile(path.join(buildDir, 'index.html'), html)
-  await fs.writeFile(path.join(buildDir, '404.html'), html)
+  let rewrittenHtml = rewriteModuleExtensions(html)
+  await fs.writeFile(path.join(buildDir, 'index.html'), rewrittenHtml)
+  await fs.writeFile(path.join(buildDir, '404.html'), rewrittenHtml)
 
-  for (let assetPath of extractAssetPaths(html)) {
-    await writeAssetFile(assetPath)
+  // The page hydrates many `clientEntry` islands, each dynamically imported in
+  // the browser. Seed the crawl from every asset URL referenced by the HTML
+  // (script tags + the `rmx-data` hydration module URLs) and then walk the
+  // import graph of each emitted module so every transitive dependency is
+  // written out for the static GitHub Pages deploy.
+  let queue = extractAssetPaths(html)
+  let written = new Set<string>()
+
+  while (queue.length > 0) {
+    let assetPath = queue.shift()!
+    if (written.has(assetPath)) continue
+    written.add(assetPath)
+
+    let body = await writeAssetFile(assetPath)
+    if (body != null) {
+      for (let next of extractAssetPaths(body)) {
+        if (!written.has(next)) queue.push(next)
+      }
+    }
   }
+
+  console.log(`Wrote ${written.size} asset files to ${path.relative(rootDir, buildDir)}/`)
 }
 
 async function renderPage(pathname: string) {
@@ -38,13 +72,16 @@ async function renderPage(pathname: string) {
   return await response.text()
 }
 
-function extractAssetPaths(html: string) {
-  let assetPrefix = publicBasePath ? `${publicBasePath}/assets/` : '/assets/'
+function extractAssetPaths(source: string) {
   let matches = new Set<string>()
 
-  for (let match of html.matchAll(/(?:src|href)="([^"]+)"/g)) {
+  // Any quoted asset-prefixed string: covers HTML `src`/`href`, the JSON
+  // `moduleUrl` hydration entries, and `import`/`import(...)` specifiers in the
+  // compiled module output.
+  let pattern = new RegExp(`["'](${escapeRegExp(assetPrefix)}[^"']+)["']`, 'g')
+  for (let match of source.matchAll(pattern)) {
     let href = match[1]
-    if (href?.startsWith(assetPrefix)) {
+    if (href) {
       matches.add(href)
     }
   }
@@ -52,15 +89,31 @@ function extractAssetPaths(html: string) {
   return [...matches]
 }
 
-async function writeAssetFile(assetPath: string) {
+function escapeRegExp(value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+}
+
+const textAssetTypes = ['javascript', 'json', 'css']
+
+async function writeAssetFile(assetPath: string): Promise<string | null> {
   let response = await router.fetch(new Request(new URL(assetPath, origin)))
   if (!response.ok) {
     throw new Error(`Failed to build asset ${assetPath}: ${response.status} ${response.statusText}`)
   }
 
-  let targetPath = toBuildPath(assetPath)
+  let buffer = Buffer.from(await response.arrayBuffer())
+
+  // Crawl using the original (`.ts`/`.tsx`) URLs the dev router understands, but
+  // write modules to `.js` paths with their references rewritten to match.
+  let contentType = response.headers.get('Content-Type') ?? ''
+  let isText = textAssetTypes.some((type) => contentType.includes(type))
+  let originalText = isText ? buffer.toString('utf8') : null
+
+  let targetPath = toBuildPath(toJsExtension(assetPath))
   await fs.mkdir(path.dirname(targetPath), { recursive: true })
-  await fs.writeFile(targetPath, Buffer.from(await response.arrayBuffer()))
+  await fs.writeFile(targetPath, originalText != null ? rewriteModuleExtensions(originalText) : buffer)
+
+  return originalText
 }
 
 function toBuildPath(assetPath: string) {
