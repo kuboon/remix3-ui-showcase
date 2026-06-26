@@ -17,9 +17,11 @@ export const SpringDemo = clientEntry(
 
     return () => {
       let custom = mode === 'custom'
+      // Animate `left` (not `transform`): a transform percentage resolves against
+      // the box's own 56px width, so it would never travel across the track.
       let transition = custom
-        ? spring.transition('transform', { duration, bounce })
-        : spring.transition('transform', mode as SpringPreset)
+        ? spring.transition('left', { duration, bounce })
+        : spring.transition('left', mode as SpringPreset)
       let easing = custom ? spring({ duration, bounce }).easing : spring(mode as SpringPreset).easing
 
       return (
@@ -32,9 +34,10 @@ export const SpringDemo = clientEntry(
             <div mix={css({ width: '100%', display: 'grid', gap: '20px', placeItems: 'center' })}>
               <div mix={css({ position: 'relative', width: 'min(320px, 100%)', height: '56px' })}>
                 <div
-                  style={{ transform: moved ? 'translateX(calc(100% - 56px))' : 'translateX(0)', transition }}
+                  style={{ left: moved ? 'calc(100% - 56px)' : '0px', transition }}
                   mix={css({
                     position: 'absolute',
+                    top: 0,
                     width: '56px',
                     height: '56px',
                     borderRadius: theme.radius.lg,
@@ -95,7 +98,7 @@ export const SpringDemo = clientEntry(
                   </Field>
                 </ControlGrid>
               ) : null}
-              <Readout>{`transition: transform ${easing}`}</Readout>
+              <Readout>{`transition: left ${easing}`}</Readout>
             </>
           }
         />
