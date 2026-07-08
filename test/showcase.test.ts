@@ -39,6 +39,19 @@ test('installs the Remix UI theme and glyph sheet', async () => {
   assert.match(html, /<symbol/)
 })
 
+test('shows the installed package versions', async () => {
+  let response = await router.fetch(
+    new Request(new URL(homePath, 'https://example.test'), {
+      headers: { Accept: 'text/html' },
+    }),
+  )
+
+  let html = await response.text()
+  assert.match(html, /Package versions/)
+  // Read from package.json at render time, so the real remix version appears.
+  assert.match(html, /3\.0\.0-beta\.4/)
+})
+
 test('server-renders the component demos as hydration islands', async () => {
   let response = await router.fetch(
     new Request(new URL(homePath, 'https://example.test'), {
