@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs'
+
 import { css, type RemixNode } from 'remix/ui'
 import { theme } from 'remix/ui/theme'
 
@@ -39,6 +41,31 @@ const animationLinks = [
   { id: 'animation-tween', label: 'Tween' },
   { id: 'animation-entrance', label: 'Entrance & exit' },
   { id: 'animation-layout', label: 'Layout' },
+]
+
+// Read the real, installed versions once at server render time so the badges
+// never drift from what the app actually runs on. This module is server-only
+// (never shipped to the client), so `node:fs` is safe here.
+function readJson(relativePath: string): Record<string, unknown> {
+  try {
+    return JSON.parse(readFileSync(new URL(relativePath, import.meta.url), 'utf8'))
+  } catch {
+    return {}
+  }
+}
+
+const appPackage = readJson('../../package.json')
+const appDevDependencies = (appPackage.devDependencies ?? {}) as Record<string, string>
+const appEngines = (appPackage.engines ?? {}) as Record<string, string>
+
+const versions: ReadonlyArray<{ label: string; value: string }> = [
+  { label: 'remix', value: (readJson('../../node_modules/remix/package.json').version as string) ?? '—' },
+  {
+    label: 'remix/ui',
+    value: (readJson('../../node_modules/@remix-run/ui/package.json').version as string) ?? '—',
+  },
+  { label: 'TypeScript', value: appDevDependencies.typescript ?? '—' },
+  { label: 'Node', value: appEngines.node ?? '—' },
 ]
 
 export function ShowcasePage() {
@@ -123,8 +150,22 @@ function Hero() {
           {LinkRow('Components', componentLinks)}
           {LinkRow('Animation', animationLinks)}
         </nav>
+        {VersionStrip()}
       </div>
     </header>
+  )
+}
+
+function VersionStrip() {
+  return (
+    <dl aria-label="Package versions" mix={versionStripStyle}>
+      {versions.map((entry) => (
+        <div key={entry.label} mix={versionPillStyle}>
+          <dt mix={versionLabelStyle}>{entry.label}</dt>
+          <dd mix={versionValueStyle}>{entry.value}</dd>
+        </div>
+      ))}
+    </dl>
   )
 }
 
@@ -260,6 +301,41 @@ const codeStyle = css({
   padding: '1px 6px',
   borderRadius: theme.radius.sm,
   background: theme.surface.lvl2,
+  color: theme.colors.text.primary,
+})
+
+const versionStripStyle = css({
+  display: 'flex',
+  flexWrap: 'wrap',
+  gap: '8px',
+  margin: 0,
+  marginTop: '4px',
+})
+
+const versionPillStyle = css({
+  display: 'inline-flex',
+  alignItems: 'baseline',
+  gap: '6px',
+  padding: '5px 11px',
+  borderRadius: theme.radius.full,
+  background: theme.surface.lvl1,
+  border: `1px solid ${theme.colors.border.subtle}`,
+})
+
+const versionLabelStyle = css({
+  margin: 0,
+  fontSize: theme.fontSize.xxs,
+  fontWeight: theme.fontWeight.bold,
+  textTransform: 'uppercase',
+  letterSpacing: theme.letterSpacing.wide,
+  color: theme.colors.text.muted,
+})
+
+const versionValueStyle = css({
+  margin: 0,
+  fontFamily: 'var(--rmx-font-family-mono)',
+  fontSize: theme.fontSize.xs,
+  fontWeight: theme.fontWeight.semibold,
   color: theme.colors.text.primary,
 })
 
