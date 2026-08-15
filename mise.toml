@@ -1,0 +1,11 @@
+[tools]
+node = "24"
+
+[tasks.build]
+description = "Typecheck, test, and build the static site for GitHub Pages"
+run = [
+  "npm ci",
+  "npm run typecheck",
+  "npm test",
+  "npm run build",
+]
