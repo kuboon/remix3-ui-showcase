@@ -19,7 +19,8 @@ jobs:
   pages:
     uses: kuboon/workflows/.github/workflows/github-page-with-preview.yaml@main
     with:
-      # The build reads BASE_URL (injected by the reusable workflow) to set the
-      # asset base path; the mise task installs deps, typechecks, tests, and builds.
-      build-command: mise install && mise run build
+      # Self-contained: the reusable workflow rebuilds `main` on every run, so the
+      # command must not depend on repo files that only exist on the PR branch.
+      # mise provides node; the build reads BASE_URL to set the asset base path.
+      build-command: mise exec node@24 -- bash -c "npm ci && npm run typecheck && npm test && npm run build"
       dist-dir: build
