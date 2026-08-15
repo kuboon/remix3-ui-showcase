@@ -1,5 +1,6 @@
 import { clientEntry, css, type Handle } from 'remix/ui'
-import { Combobox, ComboboxOption, onComboboxChange } from 'remix/ui/combobox'
+import { Combobox, ComboboxOption } from 'remix/ui/combobox'
+import { onComboboxChange } from 'remix/ui/combobox/primitives'
 
 import { DemoCard, Field, Readout, Toggle } from '../lib/controls.tsx'
 

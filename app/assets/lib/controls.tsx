@@ -1,5 +1,6 @@
 import { css, on, type Handle, type RemixNode } from 'remix/ui'
-import { theme } from 'remix/ui/theme'
+
+import { brandTint, theme } from './tokens.ts'
 
 /**
  * Shared presentational + control primitives used by every showcase demo.
@@ -104,7 +105,7 @@ export function Segmented(handle: Handle<SegmentedProps>) {
               mix={[
                 segmentStyle,
                 active ? segmentActiveStyle : segmentIdleStyle,
-                on('click', () => onChange(option.value)),
+                on<HTMLElement>('click', () => onChange(option.value)),
               ]}
             >
               {option.label}
@@ -137,7 +138,7 @@ export function Slider(handle: Handle<SliderProps>) {
         value={String(value)}
         mix={[
           sliderStyle,
-          on('input', (event) => {
+          on<HTMLInputElement>('input', (event) => {
             let target = event.currentTarget as HTMLInputElement
             onChange(Number(target.value))
           }),
@@ -162,7 +163,7 @@ export function Toggle(handle: Handle<ToggleProps>) {
         type="button"
         role="switch"
         aria-checked={checked ? 'true' : 'false'}
-        mix={[toggleStyle, checked ? toggleOnStyle : toggleOffStyle, on('click', () => onChange(!checked))]}
+        mix={[toggleStyle, checked ? toggleOnStyle : toggleOffStyle, on<HTMLElement>('click', () => onChange(!checked))]}
       >
         <span aria-hidden="true" mix={[toggleKnobStyle, checked ? toggleKnobOnStyle : undefined]} />
         <span mix={css({ fontSize: theme.fontSize.sm, fontWeight: theme.fontWeight.medium })}>{label}</span>
@@ -212,8 +213,7 @@ const stageStyle = css({
   minHeight: '180px',
   padding: '28px',
   borderRadius: theme.radius.lg,
-  background:
-    'linear-gradient(135deg, color-mix(in srgb, var(--rmx-color-action-primary-background) 6%, var(--rmx-surface-lvl1)), var(--rmx-surface-lvl2))',
+  background: `linear-gradient(135deg, ${brandTint(6)}, ${theme.surface.lvl2})`,
   border: `1px solid ${theme.colors.border.subtle}`,
   overflow: 'hidden',
 })
@@ -240,7 +240,7 @@ const tagStyle = css({
   textTransform: 'uppercase',
   letterSpacing: theme.letterSpacing.wide,
   color: theme.colors.action.primary.background,
-  background: 'color-mix(in srgb, var(--rmx-color-action-primary-background) 12%, transparent)',
+  background: brandTint(12),
   padding: '3px 8px',
   borderRadius: theme.radius.full,
 })
@@ -297,7 +297,7 @@ const toggleStyle = css({
 })
 
 const toggleOnStyle = css({
-  background: 'color-mix(in srgb, var(--rmx-color-action-primary-background) 12%, transparent)',
+  background: brandTint(12),
   border: `1px solid ${theme.colors.action.primary.background}`,
 })
 

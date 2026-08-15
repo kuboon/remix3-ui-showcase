@@ -1,9 +1,9 @@
 import { clientEntry, css, on, ref, type Handle } from 'remix/ui'
-import { Button } from 'remix/ui/button'
-import { Glyph } from 'remix/ui/glyph'
+import button from 'remix/ui/button'
 import { easings, tween } from 'remix/ui/animation'
-import { theme } from 'remix/ui/theme'
 
+import { iconButtonStyle, PlayIcon } from '../lib/icons.tsx'
+import { theme } from '../lib/tokens.ts'
 import { DemoCard, Field, Readout, Segmented, Slider } from '../lib/controls.tsx'
 
 const curveOptions = [
@@ -80,9 +80,13 @@ export const TweenDemo = clientEntry(
               >
                 0%
               </span>
-              <Button tone="primary" startIcon={<Glyph name="open" />} mix={on('click', () => run())}>
+              <button
+                type="button"
+                mix={[button({ tone: 'primary' }), iconButtonStyle, on<HTMLElement>('click', () => run())]}
+              >
+                <PlayIcon mix={css({ width: '16px', height: '16px' })} />
                 Run tween
-              </Button>
+              </button>
             </div>
           </div>
         }

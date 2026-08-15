@@ -1,8 +1,9 @@
 import { clientEntry, css, on, type Handle } from 'remix/ui'
-import { Button } from 'remix/ui/button'
-import { Glyph } from 'remix/ui/glyph'
+import button from 'remix/ui/button'
 import { spring, type SpringPreset } from 'remix/ui/animation'
-import { theme } from 'remix/ui/theme'
+
+import { iconButtonStyle, PlayIcon } from '../lib/icons.tsx'
+import { theme } from '../lib/tokens.ts'
 
 import { springPresets } from '../lib/anim.ts'
 import { ControlGrid, DemoCard, Field, Readout, Segmented, Slider } from '../lib/controls.tsx'
@@ -46,16 +47,20 @@ export const SpringDemo = clientEntry(
                   })}
                 />
               </div>
-              <Button
-                tone="secondary"
-                startIcon={<Glyph name="open" />}
-                mix={on('click', () => {
-                  moved = !moved
-                  void handle.update()
-                })}
+              <button
+                type="button"
+                mix={[
+                  button({ tone: 'neutral' }),
+                  iconButtonStyle,
+                  on<HTMLElement>('click', () => {
+                    moved = !moved
+                    void handle.update()
+                  }),
+                ]}
               >
+                <PlayIcon mix={css({ width: '16px', height: '16px' })} />
                 {moved ? 'Send back' : 'Animate'}
-              </Button>
+              </button>
             </div>
           }
           controls={

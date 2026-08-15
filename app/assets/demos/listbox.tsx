@@ -1,9 +1,9 @@
 import { clientEntry, css, type Handle } from 'remix/ui'
-import { Glyph } from 'remix/ui/glyph'
 import * as listbox from 'remix/ui/listbox'
 import type { ListboxValue } from 'remix/ui/listbox'
-import { theme } from 'remix/ui/theme'
 
+import { CheckIcon } from '../lib/icons.tsx'
+import { brandTint, theme } from '../lib/tokens.ts'
 import { DemoCard, Readout } from '../lib/controls.tsx'
 
 const options = [
@@ -13,6 +13,38 @@ const options = [
   { value: 'preact', label: 'Preact' },
   { value: 'solid', label: 'Solid' },
 ]
+
+// listbox is headless in 0.5.0 — the app owns the list and option styling.
+const listStyle = css({
+  display: 'grid',
+  gap: '2px',
+  width: 'min(320px, 100%)',
+  padding: '6px',
+  margin: 0,
+  background: theme.surface.lvl0,
+  border: `1px solid ${theme.colors.border.subtle}`,
+  borderRadius: theme.radius.md,
+  '&:focus-visible': { outline: `2px solid ${theme.colors.focus.ring}`, outlineOffset: '2px' },
+})
+
+const optionStyle = css({
+  display: 'flex',
+  alignItems: 'center',
+  gap: '8px',
+  padding: '8px 10px',
+  borderRadius: theme.radius.sm,
+  fontSize: theme.fontSize.sm,
+  color: theme.colors.text.primary,
+  cursor: 'pointer',
+  '& .check': { opacity: 0, color: theme.colors.action.primary.background },
+  '&[aria-selected="true"] .check': { opacity: 1 },
+  '&[aria-selected="true"]': {
+    color: theme.colors.action.primary.background,
+    fontWeight: theme.fontWeight.semibold,
+  },
+  '&[data-highlighted]': { background: brandTint(10) },
+  '&[aria-disabled="true"]': { opacity: 0.45, cursor: 'not-allowed' },
+})
 
 export const ListboxDemo = clientEntry(
   import.meta.url,
@@ -39,25 +71,11 @@ export const ListboxDemo = clientEntry(
               void handle.update()
             }}
           >
-            <div
-              aria-label="Frameworks"
-              tabIndex={0}
-              mix={[
-                listbox.listStyle,
-                listbox.list(),
-                css({
-                  width: 'min(320px, 100%)',
-                  background: theme.surface.lvl0,
-                  border: `1px solid ${theme.colors.border.subtle}`,
-                  borderRadius: theme.radius.md,
-                  padding: '6px',
-                }),
-              ]}
-            >
+            <div aria-label="Frameworks" tabIndex={0} mix={[listStyle, listbox.list()]}>
               {options.map((option) => (
-                <div key={option.value} mix={[listbox.optionStyle, listbox.option(option)]}>
-                  <Glyph mix={listbox.glyphStyle} name="check" />
-                  <span mix={listbox.labelStyle}>{option.label}</span>
+                <div key={option.value} mix={[optionStyle, listbox.option(option)]}>
+                  <CheckIcon class="check" mix={css({ width: '16px', height: '16px' })} />
+                  <span>{option.label}</span>
                 </div>
               ))}
             </div>

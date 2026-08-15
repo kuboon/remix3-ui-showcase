@@ -29,7 +29,26 @@ export function stripBasePath(basePath: string, pathname: string): string {
   return stripped || '/'
 }
 
-export const publicBasePath = normalizeBasePath(process.env.PUBLIC_BASE_PATH)
+export function basePathFromEnv(env: NodeJS.ProcessEnv = process.env): string {
+  // The reusable Pages workflow (kuboon/workflows) passes a full `BASE_URL`
+  // (e.g. https://user.github.io/repo or .../repo/<pr-fragment>); derive the base
+  // path from its pathname. Fall back to the plain `PUBLIC_BASE_PATH` for local
+  // builds and other CI.
+  let baseUrl = env.BASE_URL
+  if (baseUrl) {
+    let pathname = baseUrl
+    try {
+      pathname = new URL(baseUrl).pathname
+    } catch {
+      // Not an absolute URL — treat the value itself as the base path.
+    }
+    return normalizeBasePath(pathname)
+  }
+
+  return normalizeBasePath(env.PUBLIC_BASE_PATH)
+}
+
+export const publicBasePath = basePathFromEnv()
 export const homePath = createHomePath(publicBasePath)
 
 export function withPublicBasePath(pathname: string): string {
