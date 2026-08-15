@@ -1,9 +1,8 @@
 import { clientEntry, css, on, type Handle } from 'remix/ui'
-import { Button } from 'remix/ui/button'
-import { Glyph } from 'remix/ui/glyph'
+import button from 'remix/ui/button'
 import * as popover from 'remix/ui/popover'
-import { theme } from 'remix/ui/theme'
 
+import { theme } from '../lib/tokens.ts'
 import { DemoCard, Field, Readout, Segmented, Slider } from '../lib/controls.tsx'
 
 const placements = [
@@ -15,13 +14,28 @@ const placements = [
   { value: 'right', label: 'right' },
 ]
 
-type Placement =
-  | 'bottom-start'
-  | 'bottom-end'
-  | 'top-start'
-  | 'top-end'
-  | 'left'
-  | 'right'
+type Placement = 'bottom-start' | 'bottom-end' | 'top-start' | 'top-end' | 'left' | 'right'
+
+// Popover styling is app-owned in 0.5.0 (the package no longer ships surface styles).
+const surfaceStyle = css({
+  margin: 0,
+  padding: 0,
+  border: `1px solid ${theme.colors.border.subtle}`,
+  borderRadius: theme.radius.lg,
+  background: theme.surface.lvl0,
+  boxShadow: theme.shadow.lg,
+  '&:not(:popover-open)': { display: 'none' },
+})
+
+const contentStyle = css({ display: 'grid', gap: '8px', padding: '12px', minWidth: '200px' })
+
+const rowStyle = css({
+  display: 'flex',
+  alignItems: 'center',
+  gap: '8px',
+  fontSize: theme.fontSize.sm,
+  color: theme.colors.text.secondary,
+})
 
 export const PopoverDemo = clientEntry(
   import.meta.url,
@@ -38,24 +52,24 @@ export const PopoverDemo = clientEntry(
         tagline="The low-level anchored, dismissible floating surface primitive."
         stage={
           <popover.Context>
-            <Button
-              endIcon={<Glyph name="chevronDown" />}
-              tone="secondary"
+            <button
+              type="button"
               mix={[
+                button({ tone: 'neutral' }),
                 popover.anchor({ placement: placement as Placement, offset }),
                 popover.focusOnHide(),
-                on('click', () => {
+                on<HTMLElement>('click', () => {
                   open = true
                   void handle.update()
                 }),
               ]}
             >
               View options
-            </Button>
+            </button>
 
             <div
               mix={[
-                popover.surfaceStyle,
+                surfaceStyle,
                 popover.surface({
                   open,
                   onHide() {
@@ -65,7 +79,7 @@ export const PopoverDemo = clientEntry(
                 }),
               ]}
             >
-              <div mix={[popover.contentStyle, css({ display: 'grid', gap: '8px', padding: '12px', minWidth: '200px' })]}>
+              <div mix={contentStyle}>
                 <strong mix={css({ fontSize: theme.fontSize.sm })}>Display options</strong>
                 <label mix={rowStyle}>
                   <input type="checkbox" defaultChecked /> Show grid lines
@@ -73,18 +87,19 @@ export const PopoverDemo = clientEntry(
                 <label mix={rowStyle}>
                   <input type="checkbox" /> Compact rows
                 </label>
-                <Button
-                  tone="ghost"
+                <button
+                  type="button"
                   mix={[
+                    button({ tone: 'ghost' }),
                     popover.focusOnShow(),
-                    on('click', () => {
+                    on<HTMLElement>('click', () => {
                       open = false
                       void handle.update()
                     }),
                   ]}
                 >
                   Close
-                </Button>
+                </button>
               </div>
             </div>
           </popover.Context>
@@ -120,11 +135,3 @@ export const PopoverDemo = clientEntry(
     )
   },
 )
-
-const rowStyle = css({
-  display: 'flex',
-  alignItems: 'center',
-  gap: '8px',
-  fontSize: theme.fontSize.sm,
-  color: theme.colors.text.secondary,
-})

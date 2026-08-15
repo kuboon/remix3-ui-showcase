@@ -119,7 +119,10 @@ async function writeAssetFile(assetPath: string): Promise<string | null> {
 function toBuildPath(assetPath: string) {
   let pathname = new URL(assetPath, origin).pathname
   let normalizedPath = stripBasePath(publicBasePath, pathname).replace(/^\/+/, '')
-  return path.join(buildDir, normalizedPath)
+  // Static hosts decode percent-escapes when resolving files (e.g. `%40` → `@`),
+  // so write to the decoded path. Otherwise a `/assets/node_modules/%40remix-run`
+  // import would 404 against a literal `%40remix-run` directory on disk.
+  return path.join(buildDir, decodeURIComponent(normalizedPath))
 }
 
 async function copyDirectory(sourceDir: string, targetDir: string) {

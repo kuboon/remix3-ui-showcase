@@ -1,6 +1,6 @@
 import { clientEntry, css, ref, type Handle } from 'remix/ui'
 import { anchor, type AnchorPlacement } from 'remix/ui/anchor'
-import { theme } from 'remix/ui/theme'
+import { theme } from '../lib/tokens.ts'
 
 import { ControlGrid, DemoCard, Field, Readout, Segmented, Slider, Toggle } from '../lib/controls.tsx'
 

@@ -1,6 +1,6 @@
 import { clientEntry, css, type Handle } from 'remix/ui'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from 'remix/ui/accordion'
-import { theme } from 'remix/ui/theme'
+import { theme } from '../lib/tokens.ts'
 
 import { ControlGrid, DemoCard, Field, Readout, Segmented, Slider, Toggle } from '../lib/controls.tsx'
 

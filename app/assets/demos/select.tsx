@@ -1,5 +1,6 @@
 import { clientEntry, type Handle } from 'remix/ui'
-import { Option, Select, onSelectChange } from 'remix/ui/select'
+import { Option, Select } from 'remix/ui/select'
+import { onSelectChange } from 'remix/ui/select/primitives'
 
 import { DemoCard, Field, Readout, Toggle } from '../lib/controls.tsx'
 

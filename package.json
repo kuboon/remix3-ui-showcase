@@ -10,11 +10,11 @@
     "build": "NODE_ENV=production node --import remix/node-tsx build.ts"
   },
   "dependencies": {
-    "remix": "3.0.0-beta.4"
+    "remix": "3.0.0-beta.6"
   },
   "devDependencies": {
-    "@types/node": "26.0.1",
-    "typescript": "6.0.3"
+    "@types/node": "26.2.0",
+    "typescript": "7.0.2"
   },
   "engines": {
     "node": ">=24.3.0"

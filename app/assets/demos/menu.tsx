@@ -1,8 +1,15 @@
-import { clientEntry, type Handle } from 'remix/ui'
-import { Menu, MenuItem, Submenu, onMenuSelect } from 'remix/ui/menu'
-import { separatorStyle } from 'remix/ui/separator'
+import { clientEntry, css, type Handle } from 'remix/ui'
+import { Menu, MenuItem, Submenu } from 'remix/ui/menu'
+import { onMenuSelect } from 'remix/ui/menu/primitives'
 
+import { theme } from '../lib/tokens.ts'
 import { ControlGrid, DemoCard, Readout, Toggle } from '../lib/controls.tsx'
+
+const separatorStyle = css({
+  border: 0,
+  borderBlockStart: `1px solid ${theme.colors.border.subtle}`,
+  marginBlock: '4px',
+})
 
 export const MenuDemo = clientEntry(
   import.meta.url,

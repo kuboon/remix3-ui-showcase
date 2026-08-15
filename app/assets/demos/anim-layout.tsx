@@ -1,7 +1,8 @@
 import { clientEntry, css, on, type Handle } from 'remix/ui'
-import { Button } from 'remix/ui/button'
+import button from 'remix/ui/button'
 import { animateLayout, spring, type SpringPreset } from 'remix/ui/animation'
-import { theme } from 'remix/ui/theme'
+
+import { theme } from '../lib/tokens.ts'
 
 import { springPresets } from '../lib/anim.ts'
 import { ControlGrid, DemoCard, Field, Readout, Segmented, Toggle } from '../lib/controls.tsx'
@@ -79,15 +80,18 @@ export const LayoutDemo = clientEntry(
                   }}
                 />
               </ControlGrid>
-              <Button
-                tone="primary"
-                mix={on('click', () => {
-                  expanded = !expanded
-                  void handle.update()
-                })}
+              <button
+                type="button"
+                mix={[
+                  button({ tone: 'primary' }),
+                  on<HTMLElement>('click', () => {
+                    expanded = !expanded
+                    void handle.update()
+                  }),
+                ]}
               >
                 Toggle layout
-              </Button>
+              </button>
               <Readout>{`animateLayout({ ...spring("${preset}")${animateSize ? '' : ', size: false'} })`}</Readout>
             </>
           }

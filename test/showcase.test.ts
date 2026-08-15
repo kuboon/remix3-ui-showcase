@@ -25,20 +25,6 @@ test('renders the showcase home page', async () => {
   assert.match(html, /Every first-party component in remix\/ui/)
 })
 
-test('installs the Remix UI theme and glyph sheet', async () => {
-  let response = await router.fetch(
-    new Request(new URL(homePath, 'https://example.test'), {
-      headers: { Accept: 'text/html' },
-    }),
-  )
-
-  let html = await response.text()
-  // The RMX_01 theme renders CSS custom properties...
-  assert.match(html, /--rmx-color-action-primary-background/)
-  // ...and the glyph sheet registers reusable symbols.
-  assert.match(html, /<symbol/)
-})
-
 test('shows the installed package versions', async () => {
   let response = await router.fetch(
     new Request(new URL(homePath, 'https://example.test'), {
@@ -48,8 +34,10 @@ test('shows the installed package versions', async () => {
 
   let html = await response.text()
   assert.match(html, /Package versions/)
-  // Read from package.json at render time, so the real remix version appears.
-  assert.match(html, /3\.0\.0-beta\.4/)
+  // Read from package.json / node_modules at render time, so the real installed
+  // versions appear (Remix 3 beta and the remix/ui line).
+  assert.match(html, /3\.0\.0-beta\.\d+/)
+  assert.match(html, /remix\/ui/)
 })
 
 test('server-renders the component demos as hydration islands', async () => {
@@ -62,6 +50,7 @@ test('server-renders the component demos as hydration islands', async () => {
   let html = await response.text()
   // Hydration metadata names each client entry that boots in the browser.
   assert.match(html, /"exportName":"ButtonsDemo"/)
+  assert.match(html, /"exportName":"TabsDemo"/)
   assert.match(html, /"exportName":"SpringDemo"/)
   // SSR output for a few representative demos.
   assert.match(html, /Create project/)

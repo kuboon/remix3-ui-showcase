@@ -1,9 +1,9 @@
 import { clientEntry, css, on, type Handle } from 'remix/ui'
-import { Button } from 'remix/ui/button'
-import { Glyph } from 'remix/ui/glyph'
+import button from 'remix/ui/button'
 import { animateEntrance, animateExit, spring, type SpringPreset } from 'remix/ui/animation'
-import { theme } from 'remix/ui/theme'
 
+import { AddIcon, CloseIcon, iconButtonStyle } from '../lib/icons.tsx'
+import { theme } from '../lib/tokens.ts'
 import { springPresets } from '../lib/anim.ts'
 import { ControlGrid, DemoCard, Field, Readout, Segmented } from '../lib/controls.tsx'
 
@@ -77,28 +77,32 @@ export const EntranceExitDemo = clientEntry(
                           color: theme.colors.text.muted,
                           display: 'inline-flex',
                         }),
-                        on('click', () => {
+                        on<HTMLElement>('click', () => {
                           items = items.filter((entry) => entry.id !== item.id)
                           void handle.update()
                         }),
                       ]}
                     >
-                      <Glyph name="close" mix={css({ width: '16px', height: '16px' })} />
+                      <CloseIcon mix={css({ width: '16px', height: '16px' })} />
                     </button>
                   </li>
                 ))}
               </ul>
-              <Button
-                tone="secondary"
-                startIcon={<Glyph name="add" />}
-                mix={on('click', () => {
-                  items = [...items, { id: nextId, label: `New task ${nextId}` }]
-                  nextId += 1
-                  void handle.update()
-                })}
+              <button
+                type="button"
+                mix={[
+                  button({ tone: 'neutral' }),
+                  iconButtonStyle,
+                  on<HTMLElement>('click', () => {
+                    items = [...items, { id: nextId, label: `New task ${nextId}` }]
+                    nextId += 1
+                    void handle.update()
+                  }),
+                ]}
               >
+                <AddIcon mix={css({ width: '16px', height: '16px' })} />
                 Add item
-              </Button>
+              </button>
             </div>
           }
           controls={

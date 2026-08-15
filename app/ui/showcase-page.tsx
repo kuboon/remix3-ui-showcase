@@ -1,7 +1,6 @@
 import { readFileSync } from 'node:fs'
 
 import { css, type RemixNode } from 'remix/ui'
-import { theme } from 'remix/ui/theme'
 
 import { AccordionDemo } from '../assets/demos/accordion.tsx'
 import { EntranceExitDemo } from '../assets/demos/anim-entrance.tsx'
@@ -11,21 +10,27 @@ import { TweenDemo } from '../assets/demos/anim-tween.tsx'
 import { AnchorDemo } from '../assets/demos/anchor.tsx'
 import { BreadcrumbsDemo } from '../assets/demos/breadcrumbs.tsx'
 import { ButtonsDemo } from '../assets/demos/buttons.tsx'
+import { CheckboxDemo } from '../assets/demos/checkbox.tsx'
 import { ComboboxDemo } from '../assets/demos/combobox.tsx'
-import { GlyphDemo } from '../assets/demos/glyph.tsx'
+import { InputDemo } from '../assets/demos/input.tsx'
 import { ListboxDemo } from '../assets/demos/listbox.tsx'
 import { MenuDemo } from '../assets/demos/menu.tsx'
 import { PopoverDemo } from '../assets/demos/popover.tsx'
-import { ScrollLockDemo } from '../assets/demos/scroll-lock.tsx'
+import { RadioDemo } from '../assets/demos/radio.tsx'
 import { SelectDemo } from '../assets/demos/select.tsx'
-import { SeparatorDemo } from '../assets/demos/separator.tsx'
+import { TabsDemo } from '../assets/demos/tabs.tsx'
+import { ToggleDemo } from '../assets/demos/toggle.tsx'
+import { brandTint, fontSans, theme } from '../assets/lib/tokens.ts'
 import { Document } from './document.tsx'
 
 const componentLinks = [
   { id: 'button', label: 'Button' },
-  { id: 'glyph', label: 'Glyph' },
-  { id: 'separator', label: 'Separator' },
+  { id: 'input', label: 'Input' },
+  { id: 'checkbox', label: 'Checkbox' },
+  { id: 'radio', label: 'Radio' },
+  { id: 'toggle', label: 'Toggle' },
   { id: 'breadcrumbs', label: 'Breadcrumbs' },
+  { id: 'tabs', label: 'Tabs' },
   { id: 'accordion', label: 'Accordion' },
   { id: 'menu', label: 'Menu' },
   { id: 'select', label: 'Select' },
@@ -33,7 +38,6 @@ const componentLinks = [
   { id: 'listbox', label: 'Listbox' },
   { id: 'popover', label: 'Popover' },
   { id: 'anchor', label: 'Anchor' },
-  { id: 'scroll-lock', label: 'Scroll lock' },
 ]
 
 const animationLinks = [
@@ -84,9 +88,12 @@ export function ShowcasePage() {
             children: (
               <div mix={gridStyle}>
                 <ButtonsDemo />
-                <GlyphDemo />
-                <SeparatorDemo />
+                <InputDemo />
+                <CheckboxDemo />
+                <RadioDemo />
+                <ToggleDemo />
                 <BreadcrumbsDemo />
+                <TabsDemo />
                 <AccordionDemo />
                 <MenuDemo />
                 <SelectDemo />
@@ -94,7 +101,6 @@ export function ShowcasePage() {
                 <ListboxDemo />
                 <PopoverDemo />
                 <AnchorDemo />
-                <ScrollLockDemo />
               </div>
             ),
           })}
@@ -242,10 +248,9 @@ const pageStyle = css({
   minHeight: '100vh',
   margin: 0,
   padding: '40px 18px 90px',
-  fontFamily: 'var(--rmx-font-family-sans)',
+  fontFamily: fontSans,
   color: theme.colors.text.primary,
-  background:
-    'radial-gradient(1200px 600px at 50% -10%, color-mix(in srgb, var(--rmx-color-action-primary-background) 10%, transparent), transparent), var(--rmx-surface-lvl2)',
+  background: `radial-gradient(1200px 600px at 50% -10%, ${brandTint(10)}, transparent), ${theme.surface.lvl2}`,
   lineHeight: theme.lineHeight.normal,
   '@media (min-width: 768px)': { padding: '64px 32px 110px' },
 })
@@ -272,7 +277,7 @@ const eyebrowChipStyle = css({
   justifySelf: 'start',
   padding: '6px 12px',
   borderRadius: theme.radius.full,
-  background: 'color-mix(in srgb, var(--rmx-color-action-primary-background) 12%, transparent)',
+  background: brandTint(12),
   color: theme.colors.action.primary.background,
   fontSize: theme.fontSize.xs,
   fontWeight: theme.fontWeight.bold,
@@ -296,7 +301,7 @@ const heroLeadStyle = css({
 })
 
 const codeStyle = css({
-  fontFamily: 'var(--rmx-font-family-mono)',
+  fontFamily: theme.fontFamily.mono,
   fontSize: '0.9em',
   padding: '1px 6px',
   borderRadius: theme.radius.sm,
@@ -333,7 +338,7 @@ const versionLabelStyle = css({
 
 const versionValueStyle = css({
   margin: 0,
-  fontFamily: 'var(--rmx-font-family-mono)',
+  fontFamily: theme.fontFamily.mono,
   fontSize: theme.fontSize.xs,
   fontWeight: theme.fontWeight.semibold,
   color: theme.colors.text.primary,

@@ -11,10 +11,13 @@ you can change live in the browser.
 
 **Components** (`remix/ui/*`):
 
-- `button` — tone treatments and icon slots
-- `glyph` — the shared SVG sprite sheet
-- `separator` — content dividers
+- `button` — tone + size style mixin
+- `input` — text field mixin, standalone or framed with inline icons
+- `checkbox` — native checkbox mixin with mixed (indeterminate) state
+- `radio` — native radio group mixin
+- `toggle` — native checkbox rendered as a switch
 - `breadcrumbs` — semantic breadcrumb navigation
+- `tabs` — tab control with matching panels
 - `accordion` — single / multiple disclosure sets
 - `menu` — checkbox, radio, and submenu items
 - `select` — button-triggered value picker
@@ -22,7 +25,6 @@ you can change live in the browser.
 - `listbox` — the headless option-list primitive
 - `popover` — anchored, dismissible surfaces
 - `anchor` — the floating-element positioning engine
-- `scroll-lock` — freeze page scrolling
 
 **Animation** (`remix/ui/animation`): `spring`, `tween`, `animateEntrance` /
 `animateExit`, and `animateLayout`, each with adjustable presets, curves, and
@@ -30,15 +32,17 @@ parameters.
 
 ## How it works
 
-- The built-in `RMX_01` theme + glyph sheet are installed once in `app/ui/document.tsx`.
 - `app/assets/entry.ts` boots the client runtime with `run(...)`.
 - Each demo under `app/assets/demos/*` is a `clientEntry(...)` island. The server
   streams its HTML and the client hydrates it, loading the module by URL.
+- remix/ui 0.5.0 components are self-styled; the page chrome uses local design
+  tokens (`app/assets/lib/tokens.ts`) and a small inline-SVG icon set
+  (`app/assets/lib/icons.tsx`).
 - The asset server (`app/assets.ts`) compiles and serves the demo modules and their
   `remix/ui` dependencies as browser ES modules.
 - `build.ts` walks the hydration module graph for the static GitHub Pages build,
-  emitting every transitive module and rewriting `.ts`/`.tsx` URLs to `.js` so they
-  load with a JavaScript MIME type.
+  emitting every transitive module, rewriting `.ts`/`.tsx` URLs to `.js` (so they
+  load with a JavaScript MIME type), and decoding percent-escaped paths.
 
 ## Commands
 
